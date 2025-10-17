@@ -7,7 +7,7 @@ public class StringCalculator {
     private static final String DEFAULT_DELIMITER = "[,:]";
     private static final String CUSTOM_DELIMITER_PREFIX = "//";
     private static final String CUSTOM_DELIMITER_SUFFIX = "\\n";
-    private static final Pattern CUSTOM_DELIMITER_PATTERN = Pattern.compile("^//(.)\n(.*)$");
+    private static final Pattern CUSTOM_DELIMITER_PATTERN = Pattern.compile("^//(.)\\n(.*)$", Pattern.DOTALL);
 
     public int calculate(String input) {
         if (input == null || input.isEmpty()) {
@@ -18,12 +18,22 @@ public class StringCalculator {
         String numbersText = input;
 
         if (input.startsWith(CUSTOM_DELIMITER_PREFIX)) {
-            Matcher matcher = CUSTOM_DELIMITER_PATTERN.matcher(input);
-            if (!matcher.matches()) {
+            int delimiterIndex = 2;
+
+            int newlineIndex = input.indexOf('\n');
+            if (newlineIndex == -1) {
+                newlineIndex = input.indexOf("\\n");
+            }
+
+            if (newlineIndex == -1 || newlineIndex <= delimiterIndex) {
                 throw new IllegalArgumentException("잘못된 커스텀 구분자 형식입니다.");
             }
-            delimiter = Pattern.quote(matcher.group(1));
-            numbersText = matcher.group(2);
+
+            String customDelimiter = input.substring(delimiterIndex, newlineIndex);
+            delimiter = Pattern.quote(customDelimiter);
+
+            int numberStartIndex = input.charAt(newlineIndex) == '\\' ? newlineIndex + 2 : newlineIndex + 1;
+            numbersText = input.substring(numberStartIndex);
         }
 
         return sum(numbersText, delimiter);
