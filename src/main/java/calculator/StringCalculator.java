@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class StringCalculator {
     private static final String DEFAULT_DELIMITER = "[,:]";
     private static final String CUSTOM_DELIMITER_PREFIX = "//";
+    private static final String CUSTOM_DELIMITER_SUFFIX = "\\n";
     private static final Pattern CUSTOM_DELIMITER_PATTERN = Pattern.compile("^//(.)\n(.*)$");
 
     public int calculate(String input) {
@@ -34,6 +35,7 @@ public class StringCalculator {
 
         for (String token : tokens) {
             int number = parseNumber(token);
+            validatePositive(number);
             sum += number;
         }
 
@@ -41,6 +43,16 @@ public class StringCalculator {
     }
 
     private int parseNumber(String token) {
-        return Integer.parseInt(token.trim());
+        try {
+            return Integer.parseInt(token.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("숫자가 아닌 값이 포함되어 있습니다: " + token);
+        }
+    }
+
+    private void validatePositive(int number) {
+        if (number < 0) {
+            throw new IllegalArgumentException("음수는 입력할 수 없습니다: " + number);
+        }
     }
 }
