@@ -33,9 +33,14 @@ public class StringCalculator {
         int sum = 0;
 
         for (String token : tokens) {
-            sum += Integer.parseInt(token.trim());
+            int number = parseNumber(token);
+            sum += number;
         }
 
         return sum;
+    }
+
+    private int parseNumber(String token) {
+        return Integer.parseInt(token.trim());
     }
 }
